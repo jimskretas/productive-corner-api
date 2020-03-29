@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 const authRoute = require("./routes/auth");
 const boardRoute = require("./routes/board");
 
+var PORT = process.env.PORT || 3000;
+
 dotenv.config();
 mongoose.set("useFindAndModify", false);
 
@@ -25,4 +27,4 @@ app.use(express.json());
 app.use("/api/user", authRoute);
 app.use("/api/board", boardRoute);
 
-app.listen(3000, () => console.log("Server up and running"));
+app.listen(PORT, () => console.log("Server up and running"));
