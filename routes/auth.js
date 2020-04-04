@@ -31,7 +31,9 @@ router.post("/register", async (req, res) => {
     const board = new Board({
       user_id: user._id,
       board: {
-        cards: [],
+        cards: {
+          card0: { id: "card0", content: "" }
+        },
         columns: {
           backlog: {
             id: "backlog",
