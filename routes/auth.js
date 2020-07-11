@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const User = require("../model/User");
 const Board = require("../model/Board");
+const Settings = require("../model/Settings");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { registerValidation, loginValidation } = require("../validation");
@@ -22,7 +23,7 @@ router.post("/register", async (req, res) => {
   //Create new user
   const user = new User({
     username: req.body.username,
-    password: hashedPassword
+    password: hashedPassword,
   });
   try {
     const savedUser = await user.save();
@@ -32,36 +33,46 @@ router.post("/register", async (req, res) => {
       user_id: user._id,
       board: {
         cards: {
-          card0: { id: "card0", content: "" }
+          card0: { id: "card0", content: "" },
         },
         columns: {
           backlog: {
             id: "backlog",
             title: "Backlog",
-            cardIds: []
+            cardIds: [],
           },
           todo: {
             id: "todo",
             title: "To do",
-            cardIds: []
+            cardIds: [],
           },
           doing: {
             id: "doing",
             title: "Doing",
-            cardIds: []
+            cardIds: [],
           },
           done: {
             id: "done",
             title: "Done",
-            cardIds: []
-          }
+            cardIds: [],
+          },
         },
         columnOrder: ["backlog", "todo", "doing", "done"],
-        cardNumber: 0
-      }
+        cardNumber: 0,
+      },
     });
     const savedBoard = await board.save();
-    res.send(board);
+
+    const settings = new Settings({
+      user_id: user._id,
+      settings: {
+        listLimits: { backlog: 10, todo: 5, doing: 2, done: 10 },
+        sessionLength: { work: 25, break: 5 },
+      },
+    });
+    const savedSettings = await settings.save();
+
+    res.send({ board, settings });
   } catch (err) {
     res.status(400).send(err);
   }
@@ -83,7 +94,7 @@ router.post("/login", async (req, res) => {
 
   //Create and assign a token
   const token = jwt.sign({ _id: user._id }, process.env.TOKKEN_SECRET, {
-    expiresIn: "3d"
+    expiresIn: "3d",
   });
   res.header("auth-token", token).send(token);
 });

@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 //Import routes
 const authRoute = require("./routes/auth");
 const boardRoute = require("./routes/board");
+const settingsRoute = require("./routes/settings");
 
 var PORT = process.env.PORT || 3000;
 
@@ -28,5 +29,6 @@ app.use(cors());
 //Route middlewares
 app.use("/api/user", authRoute);
 app.use("/api/board", boardRoute);
+app.use("/api/settings", settingsRoute);
 
 app.listen(PORT, () => console.log("Server up and running"));
